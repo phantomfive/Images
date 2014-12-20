@@ -1,4 +1,4 @@
-Lib Image
+Lib Image (started 2004)
 ---------
 A small library to read various image file formats from a disk. Optionally 
 includes code to convert the image into an OpenGL texture.
