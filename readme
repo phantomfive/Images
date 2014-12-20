@@ -1,0 +1,97 @@
+Lib Image
+---------
+A small library to read various image file formats from a disk. Optionally 
+includes code to convert the image into an OpenGL texture.
+Lib Image is copyright by Andrew Thompson, but may be used under the terms of 
+the GNU Public License.
+
+Currently Supported
+--------------------
+Currently GIFs and JPEGs are supported.  JPEG support requires Libjpeg.
+
+How to Load an Image
+---------------------
+The function image_load() load an image off the disk and returns a pointer to
+the image data in memory.  You will need to create an Image pointer to
+reference it.
+Example of loading an image:
+
+{
+   Image *img = NULL;
+ 
+   img = image_load("/home/andrew/me.jpg");
+   .
+   .
+   .
+   return 0;
+}
+
+That's all there is to it.  The library will automatically determine the file 
+type.  
+To free the memory once you are finished using it, you can use
+   image_free(img);
+
+How to Access Data Once it's Been Loaded
+-----------------------------------------
+After you have loaded the data, you may want to know how to access it.  The
+data is stored in an array of RGB triples, in row major order. Thus, to access
+the data at a certain (x,y) coordinate, you could do this:
+
+{
+   int x,y; 
+   unsigned char red, green, blue;
+   .
+   .
+   .
+   /* find pixel data at x,y */
+   red   = img->pixels[y*img->width + x]->red;
+   green = img->pixels[y*img->width + x]->green;
+   blue  = img->pixels[y*img->width + x]->blue;
+   .
+   .
+   .
+}
+
+Stored at the end of the pixel array is the width and height of the image.
+Thus to know the width of the image, you can use img->width, and for the
+height, img->height.
+
+How to Load an Image as a Texture for OpenGL
+--------------------------------------------
+When you compile the library, you will have to define the variable WITHOPENGL.
+You can do this by modifying the file "editMe.h" or you can define it with your
+compiler.  To do this using GCC, add the option "-D WITHOPENGL"
+Here is an example of how to load an openGL texture:
+
+   image_load_for_openGL(szTextureFiles[i],&internalformat, &width, &height,
+                         &format, &type, &pixels);
+   glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, border,format,
+	        type, pixels);
+
+Look in read_image.h or buy a book about openGL to figure out what all those
+parameters are.
+
+Other Options
+--------------
+You can resize the image using the function
+
+Image *image_stretch_to_size(Image *img, int newWidth, int newHeight);
+
+If either newWidth or newHeight is 0, then that dimension will scale 
+proportionately to the other dimension.  It returns img or NULL on error.
+   You can use the function image_flip_x(Image *img) to flip the image
+across the x axis.
+Look in "read_image.h" for more documentation.
+
+About OSX
+----------
+Macintosh doesn't come automatically with libjpeg, which is probably because
+Cocoa and Carbon have their own libraries for reading images.  However, should
+you want to use my library instead, you will need to include libjpeg.  This is
+not hard.  After you have downloaded libjpeg, you will need to make it. Then,
+instead of doing a "make install", copy the files jconfig.h, jerror.h,
+jmorecfg.h, jpeglib.h, and libjpeg.a into the same directory as read_image, or
+into your project for Xcode.
+
+<--add options for command line GCC -->
+
